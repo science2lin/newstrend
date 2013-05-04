@@ -7,11 +7,10 @@ import globalconfig
 class LatestItem(configmanager.models.ConfigItem):
     pass
 
-class DisplayItem(configmanager.models.ConfigItem):
-    pass
+def getChannels():
+    return cmapi.getItemValue('channels', [])
 
 cmapi.registerModel(LatestItem)
-cmapi.registerModel(DisplayItem)
 
 def receiveData(datasource, items):
     if datasource.get('charts'):
@@ -44,4 +43,14 @@ def _saveDatasource(datasource, items, keyname):
     else:
         datasources.append(data)
     cmapi.saveItem(keyname, datasources, modelname=LatestItem)
+
+def getPages(datasources=None, keyname=None):
+    if keyname:
+        datasources = cmapi.getItemValue(keyname, [], modelname=LatestItem)
+    pages = []
+    for datasource in datasources:
+        for childPage in datasource['pages']:
+            childPage['source'] = datasource['source']
+            pages.append(childPage)
+    return pages
 

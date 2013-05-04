@@ -6,6 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'library'))
 
 import configmanager.handlers
 import headline.handlersapi
+import headline.handlersbackend
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -27,6 +28,8 @@ app = webapp2.WSGIApplication([
 ('/configitem/', configmanager.handlers.MainPage),
 ('/api/headline/add/', headline.handlersapi.HeadlineAddRequest),
 ('/headline/add/', headline.handlersapi.HeadlineAddResponse),
+('/backends/start/', headline.handlersbackend.Start),
+('/backends/run/', headline.handlersbackend.Run),
 ],
 debug=True, config=config)
 
