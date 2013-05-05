@@ -26,6 +26,9 @@ def getWordsConfig():
         result['hours.all'] = 24
     if 'hours.latest' not in result:
         result['hours.latest'] = 4
+    if 'psegs' not in result:
+        # result['psegs'] = ['n', 'ns', 'nr', 'eng']
+        result['psegs'] = []
     return result
 
 def getStopWords():

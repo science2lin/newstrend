@@ -16,7 +16,7 @@ def _isStopWord(stopWordPatterns, word):
             break
     return stopped
 
-def getTopWords(pages, stopWordPatterns, stopWords):
+def getTopWords(psegs, pages, stopWordPatterns, stopWords):
     titles = []
     for page in pages:
         title = page.get('title')
@@ -25,16 +25,20 @@ def getTopWords(pages, stopWordPatterns, stopWords):
     content = '\n'.join(titles)
 
     import jieba # May fail to load jieba
-    jieba.initialize(usingSmall=True)
-    import jieba.posseg as pseg
-    pseg.loadDictModel(usingSmall=True)
-    pwords = []
-    flags = ['n', 'ns', 'nr', 'eng']
-    for word in pseg.cut(content):
-        if word.flag not in flags:
-            continue
-        pwords.append(word.word)
-    # pwords = jieba.cut(content, cut_all=False)
+    if psegs:
+        jieba.initialize(usingSmall=True)
+        import jieba.posseg as pseg
+        pseg.loadDictModel(usingSmall=True)
+        pwords = []
+        flags = psegs
+        for word in pseg.cut(content):
+            if word.flag not in flags:
+                continue
+            pwords.append(word.word)
+    else:
+        jieba.initialize(usingSmall=False)
+        pwords = jieba.cut(content, cut_all=False)
+
     words = []
     for word in pwords:
         # sometime "\r\n\n" encountered
@@ -136,10 +140,10 @@ def _saveWords(keyname, allHours, allWords):
         }
     models.saveWords(keyname, data)
 
-def _populateWords(stopWordPatterns, stopWords, similarCriterion, hours, pages):
+def _populateWords(psegs, stopWordPatterns, stopWords, similarCriterion, hours, pages):
     start = dateutil.getHoursAs14(hours)
     pages = [ page for page in pages if page['added'] >= start ]
-    words = getTopWords(pages, stopWordPatterns, stopWords)
+    words = getTopWords(psegs, pages, stopWordPatterns, stopWords)
     _mergeWords(similarCriterion, pages, words)
     return words
 
@@ -147,8 +151,9 @@ def calculateWords(wordsConfig, stopWords, scope, pages):
     stopWordPatterns = wordsConfig['stop.patterns']
     similarCriterion = wordsConfig['similar']
     allHours = wordsConfig['hours.all']
+    psegs = wordsConfig['psegs']
 
-    allWords = _populateWords(stopWordPatterns, stopWords, similarCriterion, allHours, pages)
+    allWords = _populateWords(psegs, stopWordPatterns, stopWords, similarCriterion, allHours, pages)
     _saveWords(scope, allHours, allWords,)
 
     return allWords
