@@ -6,6 +6,10 @@ threadsafe: true
 
 handlers:
 
+- url: /admin/config/.*
+  script: library.configmanager.main.app
+  login: admin
+
 - url: /.*
   script: main.app
 

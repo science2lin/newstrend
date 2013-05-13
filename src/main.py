@@ -4,7 +4,6 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'library'))
 
-import configmanager.handlers
 import headline.handlersapi
 import headline.handlersbackend
 
@@ -25,7 +24,6 @@ config['webapp2_extras.jinja2'] = {
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/configitem/', configmanager.handlers.MainPage),
 ('/api/headline/add/', headline.handlersapi.HeadlineAddRequest),
 ('/headline/add/', headline.handlersapi.HeadlineAddResponse),
 ('/backends/start/', headline.handlersbackend.Start),

@@ -80,7 +80,7 @@ def _getWordTitles(pages, words):
                 continue
             if word['name'] in title:
                 wordTitles.add(title)
-        word['pages'] = len(wordTitles)
+        word['weight'] = len(wordTitles)
         result[word['name']] = wordTitles
     return result
 
@@ -117,7 +117,7 @@ def _mergeWords(similarCriterion, pages, words):
                 continue
             if _isSimilarWords(similarCriterion, parentTitles, childTitles):
                 parentTitles.update(childTitles)
-                word['pages'] = len(parentTitles)
+                word['weight'] = len(parentTitles)
                 del wordTitles[word2['name']]
                 children.append(word2)
                 del words[index2]
@@ -127,7 +127,7 @@ def _mergeWords(similarCriterion, pages, words):
             else:
                 index2 += 1
         if children:
-            children.sort(key=lambda item: item['pages'], reverse=True)
+            children.sort(key=lambda item: item['weight'], reverse=True)
             word['children'] = children
         index += 1
 
