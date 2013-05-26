@@ -1,12 +1,6 @@
 # coding=utf-8
-import copy
-import datetime
 import logging
 import re
-
-from commonutil import dateutil
-from . import models
-
 
 def _isStopWord(stopWordPatterns, word):
     stopped = False
@@ -16,12 +10,7 @@ def _isStopWord(stopWordPatterns, word):
             break
     return stopped
 
-def getTopWords(psegs, pages, stopWordPatterns, stopWords):
-    titles = []
-    for page in pages:
-        title = page.get('title')
-        if title:
-            titles.append(title)
+def getTopWords(psegs, titles, stopWordPatterns, stopWords):
     content = '\n'.join(titles)
 
     import jieba # May fail to load jieba
@@ -70,14 +59,11 @@ def getTopWords(psegs, pages, stopWordPatterns, stopWords):
     result.sort(key=lambda item: item['count'], reverse=True)
     return result
 
-def _getWordTitles(pages, words):
+def _getWordTitles(titles, words):
     result = {}
     for word in words:
         wordTitles = set()
-        for page in pages:
-            title = page.get('title')
-            if not title:
-                continue
+        for title in titles:
             if word['name'] in title:
                 wordTitles.add(title)
         word['weight'] = len(wordTitles)
@@ -99,8 +85,8 @@ def _isSimilarWords(similarCriterion, parentTitles, childTitles):
         return False
     return common >= threshhold
 
-def _mergeWords(similarCriterion, pages, words):
-    wordTitles = _getWordTitles(pages, words)
+def _mergeWords(similarCriterion, titles, words):
+    wordTitles = _getWordTitles(titles, words)
     index = 0
     size = len(words)
     while index < size:
@@ -131,30 +117,16 @@ def _mergeWords(similarCriterion, pages, words):
             word['children'] = children
         index += 1
 
-def _saveWords(keyname, allHours, allWords):
-    nnow = dateutil.getDateAs14(datetime.datetime.utcnow())
-    data = {
-            'updated': nnow,
-            'hours': allHours,
-            'words': allWords,
-        }
-    models.saveWords(keyname, data)
-
-def _populateWords(psegs, stopWordPatterns, stopWords, similarCriterion, hours, pages):
-    start = dateutil.getHoursAs14(hours)
-    pages = [ page for page in pages if page['added'] >= start ]
-    words = getTopWords(psegs, pages, stopWordPatterns, stopWords)
-    _mergeWords(similarCriterion, pages, words)
+def _populateWords(psegs, stopWordPatterns, stopWords, similarCriterion, titles):
+    words = getTopWords(psegs, titles, stopWordPatterns, stopWords)
+    _mergeWords(similarCriterion, titles, words)
     return words
 
-def calculateWords(wordsConfig, stopWords, scope, pages):
+def calculateWords(wordsConfig, stopWords, titles):
     stopWordPatterns = wordsConfig['stop.patterns']
     similarCriterion = wordsConfig['similar']
-    allHours = wordsConfig['hours.all']
     psegs = wordsConfig['psegs']
 
-    allWords = _populateWords(psegs, stopWordPatterns, stopWords, similarCriterion, allHours, pages)
-    _saveWords(scope, allHours, allWords,)
-
+    allWords = _populateWords(psegs, stopWordPatterns, stopWords, similarCriterion, titles)
     return allWords
 

@@ -1,19 +1,6 @@
 
 from configmanager import cmapi
 
-def getDatasourceDays():
-    site = cmapi.getItemValue('site', {})
-    days = site.get('datasource.days', 7)
-    return days
-
-def getMasterUrl():
-    site = cmapi.getItemValue('site', {})
-    url = site.get('master.url')
-    return url
-
-def getBackendsConfig():
-    return cmapi.getItemValue('backends', {})
-
 def getWordsConfig():
     result = cmapi.getItemValue('words', {})
     if 'stop.patterns' not in result:

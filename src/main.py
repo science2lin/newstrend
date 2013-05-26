@@ -4,8 +4,8 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'library'))
 
-import headline.handlersapi
-import headline.handlersbackend
+import trend.handlersapi
+import trend.handlersbackend
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -14,7 +14,7 @@ class MainPage(webapp2.RequestHandler):
 
 config = {}
 config['webapp2_extras.jinja2'] = {
-    'template_path': os.path.join(os.path.dirname(__file__), 'headline', 'templates'),
+    'template_path': os.path.join(os.path.dirname(__file__), 'trend', 'templates'),
     'filters': {
     },
     'environment_args': {
@@ -24,10 +24,8 @@ config['webapp2_extras.jinja2'] = {
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/api/headline/add/', headline.handlersapi.HeadlineAddRequest),
-('/headline/add/', headline.handlersapi.HeadlineAddResponse),
-('/backends/start/', headline.handlersbackend.Start),
-('/backends/run/', headline.handlersbackend.Run),
+('/api/words/', trend.handlersapi.WordsRequest),
+('/backends/run/', trend.handlersbackend.Run),
 ],
 debug=True, config=config)
 
