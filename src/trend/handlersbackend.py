@@ -30,9 +30,9 @@ def _runTask(requestData):
         success = networkutil.postData(callbackurl, responseData, tag='words backend',
                     trycount=_CALLBACK_TRYCOUNT, timeout=_URL_TIMEOUT)
         if success:
-            message = 'Post words successfully.'
+            message = 'Post words to %s for %s successfully.' % (callbackurl, requestData['key'], )
         else:
-            message = 'Failed to post words.'
+            message = 'Failed to post words to %s for %s.' % (callbackurl, requestData['key'], )
         logging.info(message)
 
 
