@@ -27,5 +27,5 @@ app = webapp2.WSGIApplication([
 ('/api/words/', trend.handlersapi.WordsRequest),
 ('/backends/run/', trend.handlersbackend.Run),
 ],
-debug=True, config=config)
+debug=os.environ['SERVER_SOFTWARE'].startswith('Dev'), config=config)
 
