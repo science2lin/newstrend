@@ -20,9 +20,16 @@ class WordsRequest(webapp2.RequestHandler):
             return
         networkutil.updateUuids(uuid)
 
-        models.saveWordsRequest(data['key'], data)
-        backendsData = json.dumps({'key': data['key']})
+        sourceapp = self.request.headers.get('app')
+        if sourceapp:
+            key = sourceapp + '.' + data['key']
+        else:
+            key = data['key']
+        models.saveWordsRequest(key, data)
+        backendsData = json.dumps({'key': key})
         taskqueue.add(queue_name="words", payload=backendsData, url='/backends/run/')
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write('Request is accepted.')
+        message = 'Request for %s is accepted.' % (key, )
+        logging.info(message)
+        self.response.out.write(message)
 
