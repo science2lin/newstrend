@@ -21,9 +21,10 @@ def _runTask(requestData):
         logging.warn('No words is available for %s.' % (requestData['key'], ))
         return
 
+    _TOP_WORD_COUNT = 20
     responseData = {
         'key': requestData['key'],
-        'words': wordsData,
+        'words': wordsData[:_TOP_WORD_COUNT],
     }
     masterUrls = requestData['masters']
     for callbackurl in masterUrls:
