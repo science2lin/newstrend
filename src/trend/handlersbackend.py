@@ -15,7 +15,8 @@ _CALLBACK_TRYCOUNT = 3
 def _runTask(requestData):
     wordsConfig = globalconfig.getWordsConfig()
     stopWords = globalconfig.getStopWords()
-    wordsData = bs.calculateWords(wordsConfig, stopWords, requestData['titles'])
+    userDict = globalconfig.getWordsDict()
+    wordsData = bs.calculateWords(wordsConfig, stopWords, userDict, requestData['titles'])
 
     if not wordsData:
         logging.warn('No words is available for %s.' % (requestData['key'], ))

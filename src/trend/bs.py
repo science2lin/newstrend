@@ -11,7 +11,7 @@ def _isStopWord(stopWordPatterns, word):
             break
     return stopped
 
-def _getTopWords(psegs, titles, stopWordPatterns, stopWords):
+def _getTopWords(psegs, titles, stopWordPatterns, stopWords, userDict):
     content = '\n'.join(titles)
 
     import jieba # May fail to load jieba
@@ -27,6 +27,8 @@ def _getTopWords(psegs, titles, stopWordPatterns, stopWords):
             pwords.append(word.word)
     else:
         jieba.initialize(usingSmall=False)
+        if userDict:
+            jieba.load_userdict_items(userDict)
         pwords = jieba.cut(content, cut_all=False)
 
     words = []
@@ -120,11 +122,11 @@ def _identifyWordGroup(result, mainNames, wordTitles):
     if mainNames and simpleChildren:
         _collectWord(result, mainNames, children=simpleChildren)
 
-def calculateWords(wordsConfig, stopWords, titles):
+def calculateWords(wordsConfig, stopWords, userDict, titles):
     stopWordPatterns = wordsConfig['stop.patterns']
     psegs = wordsConfig['psegs']
 
-    words = _getTopWords(psegs, titles, stopWordPatterns, stopWords)
+    words = _getTopWords(psegs, titles, stopWordPatterns, stopWords, userDict)
     wordTitles = _getWordTitles(titles, words)
     wordTitles.sort(key=lambda word: len(word['titles']), reverse=True)
 
